@@ -1,5 +1,12 @@
 ﻿//////////////////////////////////////////////////////////////////////
 ///Main window widget for createQAPlan script//
+/// Include functions:
+///     fillPtInfo()  -- pre fill some patient and plan info in window
+///     btnCrtQA_Click()  -- create QA plan routine
+///     btnExit_Click()  -- exit routine
+///     ShowMessage(String)  -- show message in history log and status bar
+///     QASettings FindQASetbyMachine()  -- Choose the QA settings based on machine used in current plan
+///     
 ///--version 0.0
 ///Becket Hui 2020/11
 //////////////////////////////////////////////////////////////////////

@@ -1,17 +1,21 @@
 ﻿//////////////////////////////////////////////////////////////////////
 ///Class and functions to create and compute verification plan
 /// Include functions:
-///     CreateCourse(CrsIDString)
-///     CopyImageSet(QASettings)
-///     CreateVerificationPlan(StructureSet, Course, plnIDString)
-///     ComputeIsoShift(QASettings)
-///     AddBeamToVerifPlan(Beam)
-///     ComputeDose()
-///     getMLCBmTechnique(Beam)
-///     GetMedian(srclist)
+///     CreateAndComputeQAPlan(Patient, ExternalPlanSetup) -- class initiation
+///     CreateCourse(CrsIDString) -- create QA course
+///     CopyImageSet(QASettings) -- copy phantom image and structure to the current patient
+///     CreateVerificationPlan(StructureSet, Course, plnIDString) -- create verification plan that links to current plan
+///     ComputeIsoShift(QASettings)  -- compute the inferior field edge and evaluate if iso center needs to be shift to avoid phantom's electronic
+///     AddBeamToVerifPlan(Beam)  -- copy a beam from current plan to the verification plan 
+///     ComputeDose()  -- compute dose in the verification plan
+///     getMLCBmTechnique(Beam)  -- get the beam delivery & MLC type
+///     copyControlPoints(Beam, Beam)  -- copy leaf and jaw positions from beam in current plan to beam in verification plan
+///     GetMedian(srclist)  -- compute median from a list
+///     
 ///--version 0.0
 ///Becket Hui 2020/12
 //////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

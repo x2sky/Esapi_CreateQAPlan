@@ -1,5 +1,10 @@
 //////////////////////////////////////////////////////////////////////
-///This project creates and export the QA verification plan for the current patient//
+///This program creates and export the QA verification plan for the current patient//
+///The program contains a user control window with options to choose course and plan to perform QA.
+///It reads from a setting file to handle multiple machines and their corres. QA phantoms, the setting file "createQAPlan.setting" is placed in the same folder as the dll.
+///To create the QA plan, the process involves copying the QA phantom image & structure set; creating QA course & verification plan; computing isocenter shift;
+///copying beams and computing the verification plan.
+///
 ///--version 0.0
 ///Becket Hui 2020/11
 //////////////////////////////////////////////////////////////////////
