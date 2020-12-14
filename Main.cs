@@ -5,7 +5,11 @@
 ///To create the QA plan, the process involves copying the QA phantom image & structure set; creating QA course & verification plan; computing isocenter shift;
 ///copying beams and computing the verification plan.
 ///
-///--version 0.0
+///--version 1.0.0.2
+///Becket Hui 2020/12
+///  Change CreateAndComputeQAPlan to handle fluence beam such as SRS and FFF
+///  
+///--version 1.0.0.1
 ///Becket Hui 2020/11
 //////////////////////////////////////////////////////////////////////
 
@@ -22,8 +26,8 @@ using System.IO;
 using createQAPlan;
 
 // TODO: Replace the following version attributes by creating AssemblyInfo.cs. You can do this in the properties of the Visual Studio project.
-[assembly: AssemblyVersion("1.0.0.1")]
-[assembly: AssemblyFileVersion("1.0.0.1")]
+[assembly: AssemblyVersion("1.0.0.2")]
+[assembly: AssemblyFileVersion("1.0.0.2")]
 [assembly: AssemblyInformationalVersion("1.0")]
 
 // TODO: Uncomment the following line if the script requires write access.

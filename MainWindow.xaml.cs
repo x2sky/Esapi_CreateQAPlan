@@ -7,7 +7,7 @@
 ///     ShowMessage(String)  -- show message in history log and status bar
 ///     QASettings FindQASetbyMachine()  -- Choose the QA settings based on machine used in current plan
 ///     
-///--version 0.0
+///--version 1.0.0.1
 ///Becket Hui 2020/11
 //////////////////////////////////////////////////////////////////////
 

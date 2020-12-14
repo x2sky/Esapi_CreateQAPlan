@@ -11,8 +11,12 @@
 ///     getMLCBmTechnique(Beam)  -- get the beam delivery & MLC type
 ///     copyControlPoints(Beam, Beam)  -- copy leaf and jaw positions from beam in current plan to beam in verification plan
 ///     GetMedian(srclist)  -- compute median from a list
-///     
-///--version 0.0
+///
+///--version 1.0.0.2
+///Becket Hui 2020/12
+///  Change AddBeamToVerifPlan to handle fluence beam such as SRS and FFF
+///  
+///--version 1.0.0.1
 ///Becket Hui 2020/12
 //////////////////////////////////////////////////////////////////////
 
@@ -20,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
 
@@ -102,9 +107,21 @@ namespace createQAPlan
             else
             {
                 bmTech = getMLCBmTechnique(currBm);  // find beam technique
-                ExternalBeamMachineParameters machParam = new ExternalBeamMachineParameters(currBm.TreatmentUnit.Id.ToString(),
-                    currBm.EnergyModeDisplayName, currBm.DoseRate, currBm.Technique.Id.ToString(), null);
-                // collimator, gantry and couch angles //
+                // Create machine parameters
+                String energy = currBm.EnergyModeDisplayName;
+                String fluence = null;
+                Match EMode = Regex.Match(currBm.EnergyModeDisplayName, @"^([0-9]+[A-Z]+)-?([A-Z]+)?", RegexOptions.IgnoreCase);  //format is... e.g. 6X(-FFF)
+                if (EMode.Success)
+                {
+                    if (EMode.Groups[2].Length > 0)  // fluence mode
+                    {
+                        energy = EMode.Groups[1].Value;
+                        fluence = EMode.Groups[2].Value;
+                    } // else normal modes uses default in decleration
+                }
+                ExternalBeamMachineParameters machParam = new ExternalBeamMachineParameters(currBm.TreatmentUnit.Id.ToString(), 
+                    energy, currBm.DoseRate, currBm.Technique.Id.ToString(), fluence);
+                // Define collimator, gantry and couch angles //
                 Double gantryAng = currBm.ControlPoints.First().GantryAngle;
                 Double collAng = currBm.ControlPoints.First().CollimatorAngle;
                 Double couchAng = 0.0;
