@@ -5,6 +5,15 @@
 ///To create the QA plan, the process involves copying the QA phantom image & structure set; creating QA course & verification plan; computing isocenter shift;
 ///copying beams and computing the verification plan.
 ///
+///--version 1.0.0.4
+///Becket Hui 2021/1
+///  Add SRS Arc and SRS Static beam techniques
+/// 
+///--version 1.0.0.3
+///Becket Hui 2021/1
+///  Change to v16, add code to remove target struct, add code to apply calculation options, add phantom isocenter to setting,
+///  add code to correct beam MU for plan with non-IMRT beams, add color option to list view history
+/// 
 ///--version 1.0.0.2
 ///Becket Hui 2020/12
 ///  Change CreateAndComputeQAPlan to handle fluence beam such as SRS and FFF
@@ -24,10 +33,12 @@ using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
 using System.IO;
 using createQAPlan;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 // TODO: Replace the following version attributes by creating AssemblyInfo.cs. You can do this in the properties of the Visual Studio project.
-[assembly: AssemblyVersion("1.0.0.2")]
-[assembly: AssemblyFileVersion("1.0.0.2")]
+[assembly: AssemblyVersion("1.0.0.4")]
+[assembly: AssemblyFileVersion("1.0.0.4")]
 [assembly: AssemblyInformationalVersion("1.0")]
 
 // TODO: Uncomment the following line if the script requires write access.
@@ -44,6 +55,16 @@ namespace VMS.TPS
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void Execute(ScriptContext context, Window MainWin)
         {
+            // Check version of the ESAPI dll
+            String esapiVer = FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(ExternalPlanSetup)).Location).FileVersion;
+            Match mEsapiVer = Regex.Match(esapiVer, @"^(\d+).");
+            if (mEsapiVer.Success)
+            {
+                int esapiVer0 = Int32.Parse(mEsapiVer.Groups[1].Value);
+                if (esapiVer0 < 16)
+                    throw new ApplicationException("ESAPI ver." + esapiVer + ", script cannot run on version below 16.");
+            }
+
             // Open current patient
             Patient currPt = context.Patient;
             // If there's no selected patient, throw an exception

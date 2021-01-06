@@ -6,7 +6,11 @@
 ///     btnExit_Click()  -- exit routine
 ///     ShowMessage(String)  -- show message in history log and status bar
 ///     QASettings FindQASetbyMachine()  -- Choose the QA settings based on machine used in current plan
-///     
+///
+///--version 1.0.0.3
+///Becket Hui 2021/1
+///  Add color option to list view history
+/// 
 ///--version 1.0.0.1
 ///Becket Hui 2020/11
 //////////////////////////////////////////////////////////////////////
@@ -127,7 +131,7 @@ namespace createQAPlan
                 ShowMessage(msgTxt);
                 return;
             }
-            int shftIso = (int)(verifPlnIso.z / 10 - verifPln.StructureSet.Image.UserOrigin.z / 10);  // convert iso shift to cm
+            int shftIso = (int)(verifPlnIso.z / 10 - qaSet.pIso.z / 10);  // convert iso shift to cm
             if (shftIso > 0)
             {
                 msgTxt = "Iso-center of the QA plan will be shifted by " + shftIso.ToString() + "cm superiorly.";
@@ -164,9 +168,9 @@ namespace createQAPlan
             if (shftIso > 0)
             {
                 msgTxt = "Please inform QA personnel:";
-                ShowMessage(msgTxt);
+                ShowMessage(msgTxt, Colors.Red);
                 msgTxt = "Iso-center of QA plan is shifted by " + shftIso.ToString() + "cm.";
-                ShowMessage(msgTxt);
+                ShowMessage(msgTxt, Colors.Red);
             }
             txtbStat.Text = "Ready.";
         }
@@ -176,11 +180,15 @@ namespace createQAPlan
             Window.GetWindow(this).Close();
         }
         // Write message to list view and status bar
-        private void ShowMessage(String msg)
+        private void ShowMessage(String msg, Color? txtColor = null)
         {
             Dispatcher.BeginInvoke(new Action(delegate
             {
-                lstvHst.Items.Add(msg);  // Add message to list view history
+                ListViewItem itm = new ListViewItem();
+                itm.Content = msg;
+                itm.Foreground = new SolidColorBrush(txtColor ?? Colors.Black);
+                lstvHst.Items.Add(itm);
+                //lstvHst.Items.Add(msg);  // Add message to list view history
                 // Get scrollviewer and make it scroll to bottom
                 Decorator bdrHst = VisualTreeHelper.GetChild(lstvHst, 0) as Decorator;
                 ScrollViewer svrHst = bdrHst.Child as ScrollViewer;

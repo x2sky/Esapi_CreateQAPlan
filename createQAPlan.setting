@@ -1,2 +1,2 @@
-Machine: TBDCCO_3166, Phantom Patient ID: AOA0002, Phantom Image ID: AC_27cm, Phantom Structure ID: AC_27cm, Phantom Length(cm): 13.5
-Machine: Clinac 21EX SBMC, Phantom Patient ID: AOA0002, Phantom Image ID: AC_27cm, Phantom Structure ID: AC_27cm, Phantom Length(cm): 13.5
+Machine: TBDCCO_3166, Phantom Patient ID: AOA0002, Phantom Image ID: AC_27cm, Phantom Structure ID: AC_27cm, Phantom IsoCenter(cm): 0, 0, 0, Phantom Length(cm): 13.5
+Machine: Clinac 21EX SBMC, Phantom Patient ID: AOA0002, Phantom Image ID: AC_27cm, Phantom Structure ID: AC_27cm, Phantom IsoCenter(cm): 0, 0, 0, Phantom Length(cm): 13.5

@@ -12,6 +12,15 @@
 ///     copyControlPoints(Beam, Beam)  -- copy leaf and jaw positions from beam in current plan to beam in verification plan
 ///     GetMedian(srclist)  -- compute median from a list
 ///
+///--version 1.0.0.4
+///Becket Hui 2021/1
+///  Add SRS Arc and SRS Static to beam techniques
+/// 
+///--version 1.0.0.3
+///Becket Hui 2021/1
+///  Change to v16, add code to remove target struct, add code to apply calculation options, add phantom isocenter,
+///  add code to correct beam MU for plan with non-IMRT beams
+///  
 ///--version 1.0.0.2
 ///Becket Hui 2020/12
 ///  Change AddBeamToVerifPlan to handle fluence beam such as SRS and FFF
@@ -25,6 +34,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows;
 using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
 
@@ -62,13 +72,14 @@ namespace createQAPlan
             verifPln.Id = verifPlnID;
             // Copy and set prescription info//
             verifPln.SetPrescription(1, currPln.DosePerFraction, currPln.TreatmentPercentage);
-            // Set Iso Center
-            verifPlnIso = verifPln.StructureSet.Image.UserOrigin;
+            // Remove target structure if available (needed for v 16)
+            verifPln.SetTargetStructureIfNoDose(null, null);
             return verifPln;
         }
         // Compute isocenter shift on verification plan
         public VVector ComputeIsoShift(QASettings qaSet)
         {
+            verifPlnIso = qaSet.pIso;  // Set iso center from settings
             List<Double> infFldEdges = new List<Double>();  // create list to store inferior field edge for each beam
             foreach (Beam bm in currPln.Beams)
             {
@@ -190,16 +201,40 @@ namespace createQAPlan
             verifPln.PlanNormalizationValue = currPln.PlanNormalizationValue;
             // Set the plan calculation model
             verifPln.SetCalculationModel(CalculationType.PhotonVolumeDose, currPln.PhotonCalculationModel);
-            verifPln.CalculateDoseWithPresetValues(muValues);  // Compute dose
+            Dictionary<String, String> currPlnCalcModels = currPln.GetCalculationOptions(currPln.PhotonCalculationModel);
+            foreach(KeyValuePair<String, String> calcModel in currPlnCalcModels)
+            {
+                verifPln.SetCalculationOption(currPln.PhotonCalculationModel, calcModel.Key, calcModel.Value);
+            }
+            // Compute dose
+            // For plan containing non-IMRT beams
+            if (verifPln.Beams.Any(b => b.MLCPlanType == MLCPlanType.ArcDynamic || b.MLCPlanType == MLCPlanType.Static))
+            {
+                verifPln.CalculateDose();  // Compute dose for non-IMRT type beams
+                // Correct for MU by changing beam weighting
+                foreach (Beam verifBm in verifPln.Beams)
+                {
+                    BeamParameters verifBmParam = verifBm.GetEditableParameters();
+                    verifBmParam.WeightFactor = muValues.First(mv => mv.Key == verifBm.Id).Value.Value / verifBm.Meterset.Value;
+                    verifBm.ApplyParameters(verifBmParam);
+                }
+            }
+            // For all other IMRT plans
+            else
+            {
+                verifPln.CalculateDoseWithPresetValues(muValues);  // Compute dose for IMRT type beams
+            }
         }
         // Determine the add beam method based on beam technique and mlc technique//
         private string getMLCBmTechnique(Beam bm)
         {
-            if (bm.Technique.Id.ToString() == "STATIC" && bm.MLCPlanType == MLCPlanType.Static)
+            if ((bm.Technique.Id.ToString() == "STATIC" || bm.Technique.Id.ToString() == "SRS STATIC")
+                && bm.MLCPlanType == MLCPlanType.Static)
             {
                 return "StaticMLC";
             }
-            else if (bm.Technique.Id.ToString() == "STATIC" && bm.MLCPlanType == MLCPlanType.DoseDynamic)
+            else if ((bm.Technique.Id.ToString() == "STATIC" || bm.Technique.Id.ToString() == "SRS STATIC")
+                && bm.MLCPlanType == MLCPlanType.DoseDynamic)
             {
                 // Check if the MLC technique is Sliding Window or Segmental
                 var lines = bm.CalculationLogs.FirstOrDefault(log => log.Category == "LMC");
@@ -211,11 +246,13 @@ namespace createQAPlan
                 }
                 return null;
             }
-            else if (bm.Technique.Id.ToString() == "ARC" && bm.MLCPlanType == MLCPlanType.ArcDynamic)
+            else if ((bm.Technique.Id.ToString() == "ARC" || bm.Technique.Id.ToString() == "SRS ARC")
+                && bm.MLCPlanType == MLCPlanType.ArcDynamic)
             {
                 return "ConformalArc";
             }
-            else if (bm.Technique.Id.ToString() == "ARC" && bm.MLCPlanType == MLCPlanType.VMAT)
+            else if ((bm.Technique.Id.ToString() == "ARC" || bm.Technique.Id.ToString() == "SRS ARC")
+                && bm.MLCPlanType == MLCPlanType.VMAT)
             {
                 return "VMAT";
             }

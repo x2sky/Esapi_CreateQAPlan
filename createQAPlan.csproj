@@ -44,17 +44,15 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="UIAutomationProvider" />
+    <Reference Include="VMS.TPS.Common.Model.API">
+      <HintPath>..\lib_ESAPI_16\VMS.TPS.Common.Model.API.dll</HintPath>
+    </Reference>
+    <Reference Include="VMS.TPS.Common.Model.Types">
+      <HintPath>..\lib_ESAPI_16\VMS.TPS.Common.Model.Types.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="VMS.TPS.Common.Model.API">
-      <HintPath>..\lib_ESAPI\VMS.TPS.Common.Model.API.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="VMS.TPS.Common.Model.Types">
-      <HintPath>..\lib_ESAPI\VMS.TPS.Common.Model.Types.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CreateAndComputeQAPlan.cs" />
